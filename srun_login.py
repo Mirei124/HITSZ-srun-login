@@ -9,11 +9,12 @@ import tkinter.messagebox
 from tkinter import Label, Entry, Button, Tk
 
 import requests
-from loguru import logger
 
 import srun_encryption
 
-logger.add(r'srun_log.txt', rotation='1 MB')
+# from loguru import logger
+
+# logger.add(r'srun_log.txt', rotation='1 MB')
 
 headers = {
     "Accept": "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01",
@@ -164,7 +165,7 @@ class Login:
             "_": round(time.time() * 1000),
         }
         response = requests.get(url=self.portal_url, params=params, headers=headers, timeout=5)
-        logger.info(response.text)
+        # logger.info(response.text)
 
         # 检查登录结果
         error_info = re.search(r'"error":"(.*?)"', response.text)
@@ -238,8 +239,8 @@ def main():
         try:
             username = config['default']['username'][:16]
             password = config['default']['password'][:16]
-        except Exception as e:
-            logger.error(e)
+        except Exception:
+            # logger.error(e)
             Window()
             return
         if try_login(username, password):
