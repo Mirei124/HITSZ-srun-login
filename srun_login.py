@@ -30,12 +30,13 @@ headers = {
 
 
 class Login:
+    login_page_url = 'http://10.248.98.2/srun_portal_pc?ac_id=1&srun_wait=1&theme=basic2'
+    get_challenge_url = 'http://10.248.98.2/cgi-bin/get_challenge'
+    portal_url = 'http://10.248.98.2/cgi-bin/srun_portal'
+    callback = 'jQuery112402558423914676127_1615653299931'
+    user_ip = ''
+
     def __init__(self, username, password):
-        self.login_page_url = 'http://10.248.98.2/srun_portal_pc?ac_id=1&srun_wait=1&theme=basic2'
-        self.get_challenge_url = 'http://10.248.98.2/cgi-bin/get_challenge'
-        self.portal_url = 'http://10.248.98.2/cgi-bin/srun_portal'
-        self.callback = 'jQuery112402558423914676127_1615653299931'
-        self.user_ip = ''
         self.username = username
         self.password = password
 
@@ -60,7 +61,8 @@ class Login:
         chkstr += token + i
         return hashlib.sha1(chkstr.encode()).hexdigest()
 
-    def format_error(self, error_msg):
+    @staticmethod
+    def format_error(error_msg):
         if error_msg == 'ok':
             return 'ok'
         error_dict = {"H": "时", "M": "分", "S": "秒", "E0000": "登录成功", "E2401": "User-Request",
