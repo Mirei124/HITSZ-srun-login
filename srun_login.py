@@ -9,12 +9,11 @@ import tkinter.messagebox
 from tkinter import Label, Entry, Button, Tk
 
 import requests
+from loguru import logger
 
 import srun_encryption
 
-# from loguru import logger
-
-# logger.add(r'srun.txt', rotation='1 MB')
+logger.add(r'srun_log.txt', rotation='1 MB')
 
 headers = {
     "Accept": "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01",
@@ -133,8 +132,7 @@ class Login:
             login_page_text = requests.get(self.login_page_url, headers=headers, timeout=5).text
             self.user_ip = re.search(r'id="user_ip" value="([0-9.]+)"', login_page_text).group(1)
         except requests.exceptions.ConnectionError:
-            # logger.warning('[失败]' + str(e))
-            return '网络连接错误'
+            return '网络连接错误(ConnectionError)'
         params = {
             "callback": self.callback,
             "username": self.username,
@@ -166,6 +164,7 @@ class Login:
             "_": round(time.time() * 1000),
         }
         response = requests.get(url=self.portal_url, params=params, headers=headers, timeout=5)
+        logger.info(response.text)
 
         # 检查登录结果
         error_info = re.search(r'"error":"(.*?)"', response.text)
@@ -179,17 +178,23 @@ def try_login(username, password):
     login = Login(username, password)
     login_result = login.run()
     if login_result == 'ok':
+        temp = Tk()
+        temp.geometry('1x1+20000+20000')
         tkinter.messagebox.showinfo('登录成功', '登录成功')
+        temp.destroy()
         config = configparser.ConfigParser()
         config['default'] = {
             'username': username,
             'password': password
         }
-        with open('srun.ini', 'w') as fp:
+        with open('srun_config.ini', 'w') as fp:
             config.write(fp)
         return 1
     else:
+        temp = Tk()
+        temp.geometry('1x1+20000+20000')
         tkinter.messagebox.showerror('登录失败', login_result)
+        temp.destroy()
         return 0
 
 
@@ -227,14 +232,14 @@ class Window:
 
 
 def main():
-    if os.path.exists('srun.ini'):
+    if os.path.exists('srun_config.ini'):
         config = configparser.ConfigParser()
-        config.read('srun.ini')
+        config.read('srun_config.ini')
         try:
             username = config['default']['username'][:16]
             password = config['default']['password'][:16]
         except Exception as e:
-            tkinter.messagebox.showerror('校园网登录', e)
+            logger.error(e)
             Window()
             return
         if try_login(username, password):
