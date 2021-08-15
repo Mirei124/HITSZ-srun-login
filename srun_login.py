@@ -17,12 +17,15 @@ import srun_encryption
 # logger.add(r'srun.txt', rotation='1 MB')
 
 headers = {
+    "Accept": "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01",
+    "Accept-Encoding": "gzip, deflate",
+    "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "Connection": "keep-alive",
+    "Cookie": "lang=zh-CN",
     "Host": "10.248.98.2",
     "Referer": "http://10.248.98.2/srun_portal_pc?ac_id=1&srun_wait=1&theme=basic2",
-    "Cookie": "lang=zh-CN",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                  "Chrome/89.0.4389.82 Safari/537.36 Edg/89.0.774.50",
-}
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36 Edg/89.0.774.50",
+    "X-Requested-With": "XMLHttpRequest"}
 
 
 class Login:
