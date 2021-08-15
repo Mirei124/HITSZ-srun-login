@@ -9,6 +9,8 @@ import tkinter.messagebox
 from tkinter import Label, Entry, Button, Tk
 
 import requests
+import win32api
+import win32con
 
 import srun_encryption
 
@@ -249,6 +251,8 @@ def main():
 
 
 if __name__ == "__main__":
+    if os.path.exists('srun_config.ini'):
+        win32api.SetFileAttributes('srun_config.ini', win32con.FILE_ATTRIBUTE_HIDDEN)
     main()
 
 # username = '12345'
