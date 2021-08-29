@@ -1,4 +1,5 @@
 import configparser
+import ctypes
 import hashlib
 import hmac
 import json
@@ -9,14 +10,8 @@ import tkinter.messagebox
 from tkinter import Label, Entry, Button, Tk
 
 import requests
-import win32api
-import win32con
 
 import srun_encryption
-
-# from loguru import logger
-
-# logger.add(r'srun_log.txt', rotation='1 MB')
 
 headers = {
     "Accept": "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01",
@@ -167,7 +162,6 @@ class Login:
             "_": round(time.time() * 1000),
         }
         response = requests.get(url=self.portal_url, params=params, headers=headers, timeout=5)
-        # logger.info(response.text)
 
         # 检查登录结果
         error_info = re.search(r'"error":"(.*?)"', response.text)
@@ -177,7 +171,9 @@ class Login:
             return response.text
 
 
-def try_login(username, password):
+def exec_login(username, password):
+    if not username or not password:
+        return False
     login = Login(username, password)
     login_result = login.run()
     if login_result == 'ok':
@@ -190,15 +186,18 @@ def try_login(username, password):
             'username': username,
             'password': password
         }
+        ctypes.windll.kernel32.SetFileAttributesW('srun_config.ini', 128)
         with open('srun_config.ini', 'w') as fp:
             config.write(fp)
-        return 1
+        ctypes.windll.kernel32.SetFileAttributesW('srun_config.ini', 2)
+        # win32api.SetFileAttributes('srun_config.ini', win32con.FILE_ATTRIBUTE_HIDDEN)
+        return True
     else:
         temp = Tk()
         temp.geometry('1x1+20000+20000')
         tkinter.messagebox.showerror('登录失败', login_result)
         temp.destroy()
-        return 0
+        return False
 
 
 class Window:
@@ -227,35 +226,42 @@ class Window:
     def login(self):
         username = self.E1.get()[:16]
         password = self.E2.get()[:16]
-        if username == '' or password == '':
+        if not username or not password:
             tkinter.messagebox.showinfo('提示', '请输入用户名和密码')
             return
-        if try_login(username, password):
+        if exec_login(username, password):
             self.root.destroy()
 
 
 def main():
     if os.path.exists('srun_config.ini'):
-        config = configparser.ConfigParser()
-        config.read('srun_config.ini')
-        try:
-            username = config['default']['username'][:16]
-            password = config['default']['password'][:16]
-        except Exception:
-            # logger.error(e)
-            Window()
-            return
-        if try_login(username, password):
+        with open('srun_config.ini', 'r') as fp:
+            config = configparser.ConfigParser()
+            try:
+                config.read_file(fp)
+                username = config['default']['username'][:16]
+                password = config['default']['password'][:16]
+            except (configparser.ParsingError, configparser.InterpolationSyntaxError):
+                username = password = ''
+        if exec_login(username, password):
             return
     Window()
 
+    # if os.path.exists('srun_config.ini'):
+    #     with open('srun_config.ini', 'r') as fp:
+    #         config = configparser.ConfigParser()
+    #         config.readfp(fp)
+    #         try:
+    #             username = config['default']['username'][:16]
+    #             password = config['default']['password'][:16]
+    #         except Exception:
+    #             # logger.error(e)
+    #             Window()
+    #             return
+    #     if try_login(username, password):
+    #         return
+    # Window()
+
 
 if __name__ == "__main__":
-    if os.path.exists('srun_config.ini'):
-        win32api.SetFileAttributes('srun_config.ini', win32con.FILE_ATTRIBUTE_HIDDEN)
     main()
-
-# username = '12345'
-# password = '123456'
-# login = Login(username, password)
-# login.run()
