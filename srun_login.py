@@ -31,11 +31,11 @@ class Login:
     get_challenge_url = 'http://10.248.98.2/cgi-bin/get_challenge'
     portal_url = 'http://10.248.98.2/cgi-bin/srun_portal'
     callback = 'jQuery112402558423914676127_1615653299931'
-    user_ip = ''
 
     def __init__(self, username, password):
         self.username = username
         self.password = password
+        self.user_ip = ''
 
     def _get_info(self, token):
         d = {"username": self.username,
@@ -127,17 +127,17 @@ class Login:
     def run(self):
         # 获取token
         try:
-            login_page_text = requests.get(self.login_page_url, headers=headers, timeout=5).text
+            login_page_text = requests.get(Login.login_page_url, headers=headers, timeout=5).text
             self.user_ip = re.search(r'id="user_ip" value="([0-9.]+)"', login_page_text).group(1)
         except requests.exceptions.ConnectionError:
             return '网络连接错误(ConnectionError)'
         params = {
-            "callback": self.callback,
+            "callback": Login.callback,
             "username": self.username,
             "ip": self.user_ip,
             "_": round(time.time() * 1000)
         }
-        response = requests.get(self.get_challenge_url, params=params, headers=headers, timeout=5)
+        response = requests.get(Login.get_challenge_url, params=params, headers=headers, timeout=5)
         token = re.search(r'"challenge":"(.*?)"', response.text).group(1)
 
         # 加密
@@ -146,7 +146,7 @@ class Login:
         chksum = self._get_chksum(token, hmd5, i)
         password = '{MD5}' + hmd5
         params = {
-            "callback": self.callback,
+            "callback": Login.callback,
             "action": "login",
             "username": self.username,
             "password": password,
@@ -161,14 +161,22 @@ class Login:
             "double_stack": "0",
             "_": round(time.time() * 1000),
         }
-        response = requests.get(url=self.portal_url, params=params, headers=headers, timeout=5)
+        response_text = requests.get(url=Login.portal_url, params=params, headers=headers, timeout=5).text
 
         # 检查登录结果
-        error_info = re.search(r'"error":"(.*?)"', response.text)
-        if error_info:
-            return self.format_error(error_info.group(1))
+        response_text = response_text[42:-1]
+        try:
+            json_data = json.loads(response_text)
+        except json.decoder.JSONDecodeError:
+            json_data = {}
+        if 'error_msg' in json_data:
+            if json_data['error_msg'] == '':
+                error_info = json_data['error']
+            else:
+                error_info = json_data['error_msg'].split(':')[0].strip()
         else:
-            return response.text
+            error_info = response_text
+        return self.format_error(error_info)
 
 
 def exec_login(username, password):
@@ -224,8 +232,8 @@ class Window:
         self.root.mainloop()
 
     def login(self):
-        username = self.E1.get()[:16]
-        password = self.E2.get()[:16]
+        username = self.E1.get()[:20]
+        password = self.E2.get()[:20]
         if not username or not password:
             tkinter.messagebox.showinfo('提示', '请输入用户名和密码')
             return
@@ -239,8 +247,8 @@ def main():
             config = configparser.ConfigParser()
             try:
                 config.read_file(fp)
-                username = config['default']['username'][:16]
-                password = config['default']['password'][:16]
+                username = config['default']['username'][:20]
+                password = config['default']['password'][:20]
             except (configparser.ParsingError, configparser.InterpolationSyntaxError):
                 username = password = ''
         if exec_login(username, password):
@@ -252,8 +260,8 @@ def main():
     #         config = configparser.ConfigParser()
     #         config.readfp(fp)
     #         try:
-    #             username = config['default']['username'][:16]
-    #             password = config['default']['password'][:16]
+    #             username = config['default']['username'][:20]
+    #             password = config['default']['password'][:20]
     #         except Exception:
     #             # logger.error(e)
     #             Window()
