@@ -25,6 +25,8 @@ headers = {
                   "Chrome/89.0.4389.82 Safari/537.36 Edg/89.0.774.50",
     "X-Requested-With": "XMLHttpRequest"}
 
+key = "hello"
+
 
 class Login:
     login_page_url = 'http://10.248.98.2/srun_portal_pc?ac_id=1&srun_wait=1&theme=basic2'
@@ -192,7 +194,7 @@ def exec_login(username, password):
         config = configparser.ConfigParser()
         config['default'] = {
             'username': username,
-            'password': password
+            'password': srun_encryption.aes_encrypt(key, password)
         }
         ctypes.windll.kernel32.SetFileAttributesW('srun_config.ini', 128)
         with open('srun_config.ini', 'w') as fp:
@@ -249,6 +251,7 @@ def main():
                 config.read_file(fp)
                 username = config['default']['username'][:20]
                 password = config['default']['password'][:20]
+                password = srun_encryption.aes_decrypt(key, password)
             except (configparser.ParsingError, configparser.InterpolationSyntaxError):
                 username = password = ''
         if exec_login(username, password):

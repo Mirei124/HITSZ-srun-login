@@ -1,4 +1,7 @@
+import base64
 import math
+
+from Crypto.Cipher import AES
 
 
 # xEncode
@@ -120,3 +123,25 @@ def get_base64(s):
 # i
 def info(d, k):
     return "{SRBX1}" + get_base64(get_xencode(d, k))
+
+
+# AES
+def add_to_16(value):
+    while len(value) % 16 != 0:
+        value += "\0"
+    return str.encode(value)
+
+
+def aes_encrypt(key, info):
+    aes = AES.new(add_to_16(key), AES.MODE_ECB)
+    encrypted_byte = aes.encrypt(add_to_16(info))
+    encrypted_info = base64.encodebytes(encrypted_byte).decode(encoding="UTF-8")
+    return encrypted_info
+
+
+def aes_decrypt(key, info):
+    aes = AES.new(add_to_16(key), AES.MODE_ECB)
+    encrypted_byte = base64.decodebytes(info.encode(encoding="UTF-8"))
+    decrypted_info = aes.decrypt(encrypted_byte).decode(
+        "UTF-8").replace("\0", "")
+    return decrypted_info
