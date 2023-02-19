@@ -1,0 +1,11 @@
+[Unit]
+Description=auto login srun network
+Wants=network-online.target
+After=network.target network-online.target
+
+[Service]
+Type=simple
+ExecStart=srun_login username password
+
+[Install]
+WantedBy=default.target

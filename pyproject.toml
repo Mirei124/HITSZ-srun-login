@@ -1,0 +1,9 @@
+[project]
+name = "srun_login"
+version = "0.0.1"
+dependencies = [
+  "requests",
+]
+
+[project.scripts]
+srun_login = "srun_login.main:login"
