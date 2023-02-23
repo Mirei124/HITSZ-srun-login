@@ -2,7 +2,7 @@
 
 pkgname=python-srun_login
 _pkgname=srun_login
-pkgver=0.0.1
+pkgver=0.0.2
 pkgrel=1
 pkgdesc='a tool to login srun network'
 arch=('any')
@@ -10,7 +10,7 @@ license=('GPL')
 depends=('python-setuptools' 'python-requests')
 source=("${_pkgname}-${pkgver}.tar.gz"
         "srun_login.service")
-sha256sums=('9a00f29b0ef210452abcda85d52ae64f66e8d63250b95c38dd99002665354ce8'
+sha256sums=('2d05fe3cae12f75938556925866f049fe4c103a4ff2b455893095a6588e6148a'
             '8a3b4d79f0c8ea15df5ae3bee2538988bc1cfb9e10d9151e04a1fb7299f066bc')
 
 build() {

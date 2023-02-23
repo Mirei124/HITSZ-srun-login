@@ -143,6 +143,13 @@ class SrunLogin:
         params = self._encrypt_data()
         return self._submit(params)
 
+    def check_login_result(self, result: dict) -> int:
+        if result['error'] == 'ok':
+            return 0
+        if 'success' in result['error_msg']:
+            return 0
+        return 1
+
 
 class SrunEncrypt:
 

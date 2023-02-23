@@ -15,7 +15,8 @@ def login():
         password = args[2]
     sl = SrunLogin(username, password)
     result = sl.run()
-    if result['error'] == 'ok':
-        exit(0)
-    else:
-        exit(1)
+    exit(sl.check_login_result(result))
+
+
+if __name__ == "__main__":
+    login()
