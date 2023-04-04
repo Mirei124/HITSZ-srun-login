@@ -37,12 +37,15 @@ class SrunLogin:
     CHALLENGE_URL = 'http://10.248.98.2/cgi-bin/get_challenge'
     PORTAL_URL = 'http://10.248.98.2/cgi-bin/srun_portal'
 
-    def __init__(self, username: str, password: str):
+    def __init__(self,
+                 username: str,
+                 password: str,
+                 user_ip: str | None = None):
         if not username or not password:
             raise ValueError('username or password invalid')
         self.username = username
         self.password = password
-        self.user_ip = None
+        self.user_ip = None if user_ip is None else user_ip
         self.challenge = None
         self.domain = ''
         self.ac_id = '1'
@@ -60,6 +63,9 @@ class SrunLogin:
             self.user_ip = user_ip.group(1)
             return user_ip.group(1)
         return None
+
+    def set_ip(self, ip: str):
+        self.user_ip = ip
 
     def _get_challenge(self) -> str | None:
         if not self.user_ip:
@@ -138,7 +144,8 @@ class SrunLogin:
         return result
 
     def run(self) -> dict:
-        self._get_ip()
+        if self.user_ip is None:
+            self._get_ip()
         self._get_challenge()
         params = self._encrypt_data()
         return self._submit(params)

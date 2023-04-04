@@ -10,7 +10,7 @@ license=('GPL')
 depends=('python-setuptools' 'python-requests')
 source=("${_pkgname}-${pkgver}.tar.gz"
         "srun_login.service")
-sha256sums=('4aaa7265c46fac7daf6d9ec8cb00cbc45b2bc995deb11e43283a858ec9b5dfd8'
+sha256sums=('a47bf4b275f7dd3bb5e9715778bb5da7e430c7785c6e92f1327d9f7bac029c11'
             '8a3b4d79f0c8ea15df5ae3bee2538988bc1cfb9e10d9151e04a1fb7299f066bc')
 
 build() {
