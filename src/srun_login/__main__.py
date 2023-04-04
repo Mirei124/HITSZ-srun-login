@@ -1,4 +1,4 @@
-from srun_login.lib import SrunLogin
+from .lib import SrunLogin
 import sys
 
 

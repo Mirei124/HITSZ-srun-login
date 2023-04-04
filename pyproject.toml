@@ -1,6 +1,10 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "srun_login"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
   "requests",
 ]
