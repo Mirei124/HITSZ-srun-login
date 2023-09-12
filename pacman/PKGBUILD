@@ -2,25 +2,28 @@
 
 pkgname=python-srun_login
 _pkgname=srun_login
-pkgver=0.0.3
+pkgver=0.0.4
 pkgrel=1
 pkgdesc='a tool to login srun network'
 arch=('any')
 license=('GPL')
-depends=('python-setuptools' 'python-requests')
+depends=('python-requests')
+makedepends=('python-setuptools'
+             'python-build'
+             'python-installer')
 source=("${_pkgname}-${pkgver}.tar.gz"
         "srun_login.service")
-sha256sums=('a47bf4b275f7dd3bb5e9715778bb5da7e430c7785c6e92f1327d9f7bac029c11'
+sha256sums=('276e8820cb0644c06bd59642a5e510f5f4e7942b831245fc1e081343af780fa9'
             '8a3b4d79f0c8ea15df5ae3bee2538988bc1cfb9e10d9151e04a1fb7299f066bc')
 
 build() {
   cd "$srcdir/${_pkgname}-${pkgver}"
-  python setup.py build
+  python -m build --wheel --no-isolation
 }
 
 package() {
   cd "$srcdir/${_pkgname}-${pkgver}"
-  python setup.py install --root="$pkgdir" -O1 --skip-build
+  python -m installer --destdir="$pkgdir" dist/*.whl
   install -Dm644 -t "$pkgdir/usr/lib/systemd/system" "$srcdir/srun_login.service"
 }
 # vim: set ft=sh ts=2 sw=2 et:

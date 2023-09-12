@@ -2,7 +2,7 @@
 
 pkgver=$(cat pyproject.toml | sed -n 's/version = "\(.\+\)"/\1/p')
 
-python -m build
+python -m build --sdist --no-isolation
 rm -f pacman/*.tar.gz
 cp -f dist/srun_login-"$pkgver".tar.gz pacman/
 cd pacman/
