@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 pkgver=$(cat pyproject.toml | sed -n 's/version = "\(.\+\)"/\1/p')
 
 python -m build --sdist --no-isolation

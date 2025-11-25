@@ -5,7 +5,7 @@ After=network.target network-online.target
 
 [Service]
 Type=simple
-ExecStart=srun_login username password
+ExecStart=srun_login login username password
 
 [Install]
 WantedBy=default.target

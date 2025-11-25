@@ -4,10 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "srun_login"
-version = "0.0.4"
+version = "0.1.0"
 dependencies = [
   "requests",
+  "pycryptodome"
 ]
 
 [project.scripts]
-srun_login = "srun_login.__main__:login"
+srun_login = "srun_login.srun_login:main"
